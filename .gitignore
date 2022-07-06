@@ -3,6 +3,8 @@
 .env 
 
 dist/
+.vscode/
+
 
 ignore/
 ign-*

@@ -41,27 +41,38 @@ This is starter project.
 
 Below we describe the conventions or tools specific to golang project.
 
+Start with the Makefile and see most common operations for this repository.
+### Makefile
+* make check
+* make build 
+* make test 
+
 ### Layout
 ```
 .
 ├── Makefile
 ├── cmd
-│   └── cli
-│       └── main.go
+│   └── cli
+│       └── main.go
+├── config
+│   └── sample.launch.json
 ├── dist
-│   └── btk-cli
+│   ├── btk-cli-linux
+│   └── btk-cli-macos
+├── docs
+│   └── resources.md
 ├── go.mod
 ├── go.sum
 ├── pkg
-│   └── hash
-│       └── hash_test.go
+│   └── hash
+│       └── hash_test.go
 ├── readme.md
 ├── scripts
-│   └── dev
-│       └── check.sh
+│   └── dev
+│       ├── check.sh
+│       ├── lint.sh
+│       └── setup.sh
 └── semvar
-
-7 directories, 9 files
 ```
 
 A brief description of the layout:

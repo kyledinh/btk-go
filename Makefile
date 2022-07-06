@@ -6,26 +6,35 @@ BUILD_DIR = ./build
 OUTPUT_DIR = ./dist
 
 # Current version of the project.
-VERSION ?= $(shell git describe --tags --always --dirty)
+GIT_TAG ?= $(shell git describe --tags --always --dirty)
 
 # Golang standard bin directory.
 GOPATH ?= $(shell go env GOPATH)
+GOROOT ?= $(shell go env GOPATH)
 BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
 # ACTIONS
 build:
 	@echo "## Building the binaries"
-	go build -o dist/btk-cli cmd/cli/main.go
+	GOOS=darwin GOARCH=amd64 go build -o dist/btk-cli-macos cmd/cli/main.go
+	GOOS=linux GOARCH=386 go build -o dist/btk-cli-linux cmd/cli/main.go
 	@echo "dist/"
 	@ls dist
 
 check:
 	@./scripts/dev/check.sh
-	
-# more info about `GOGC` env: https://github.com/golangci/golangci-lint#memory-usage-of-golangci-lint
-lint: $(GOLANGCI_LINT)
-	@$(GOLANGCI_LINT) run
 
-$(GOLANGCI_LINT):
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.23.6
+lint: 
+	@./scripts/dev/lint.sh
+
+analyze:
+	@./scripts/dev/lint.sh
+	go vet -v cmd/...
+	staticcheck github.com/kyledinh/btk-go/cmd/...
+
+setup:
+	@./scripts/dev/setup.sh
+
+test:
+	go test ./...
