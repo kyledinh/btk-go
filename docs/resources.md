@@ -33,6 +33,8 @@
 
 ## Logging 
 
+- https://www.datadoghq.com/blog/go-logging/
+
 ## Keys/Secrets
 
 ## SDKs 

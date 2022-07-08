@@ -1,9 +1,9 @@
 package generators
 
 import (
+	"bytes"
 	"embed"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -24,17 +24,11 @@ type Page struct {
 	Name string `json:"name"`
 }
 
-func main() {
-	action := flag.Bool("action", false, "trigger action")
-	flag.Parse()
-	args := flag.Args()
+func GenPage(action string, args []string) ([]byte, error) {
 
 	sourceFileName := args[0]
 	_ = sourceFileName
-
-	if *action {
-		fmt.Println("Action triggered")
-	}
+	_ = action
 
 	jsonFile, err := os.Open(sourceFileName)
 	if err != nil {
@@ -43,11 +37,11 @@ func main() {
 	defer jsonFile.Close()
 
 	payload := Payload{}
-	bytes, err := ioutil.ReadAll(jsonFile)
+	ba, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		fmt.Println(err)
 	}
-	json.Unmarshal(bytes, &payload)
+	json.Unmarshal(ba, &payload)
 
 	// spew.Dump(payload)
 
@@ -56,8 +50,10 @@ func main() {
 		fmt.Println(err)
 	}
 
-	err = tmpl.Execute(os.Stdout, payload)
+	var buf bytes.Buffer
+	err = tmpl.Execute(&buf, payload)
 	if err != nil {
 		fmt.Println(err)
 	}
+	return buf.Bytes(), err
 }

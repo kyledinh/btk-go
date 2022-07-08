@@ -8,3 +8,5 @@ dist/
 
 ignore/
 ign-*
+
+__debug_bin

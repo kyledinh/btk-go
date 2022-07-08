@@ -37,6 +37,7 @@
 
 - spew: https://pkg.go.dev/github.com/davecgh/go-spew
 - zap: https://github.com/uber-go/zap
+- https://www.datadoghq.com/blog/go-logging/
 
 ### Docker
 
