@@ -47,6 +47,13 @@ Start with the Makefile and see most common operations for this repository.
 * make build 
 * make test 
 
+### Software Versions
+
+| Software       | Version | Install                                        |
+|----------------|---------|------------------------------------------------|
+| Go             | 1.18    | https://go.dev/doc/install                     |
+| Docker Desktop | 4.3.x   | https://www.docker.com/products/docker-desktop |
+
 ### Layout
 ```
 .

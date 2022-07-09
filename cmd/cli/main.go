@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/ghodss/yaml"
+	generators "github.com/kyledinh/btk-go/internal/generator"
 	"github.com/kyledinh/btk-go/pkg/prefab"
 	goyaml "gopkg.in/yaml.v2"
 )
@@ -18,9 +19,7 @@ func main() {
 	j2y := flag.Bool("j2y", false, "Convert the default json to yaml.")
 
 	gentest := flag.Bool("gentest", false, "Generate a test file")
-
 	prefabFlag := flag.Bool("prefab", false, "Output a prefab file")
-
 	outfile := flag.String("outfile", "", "")
 
 	flag.Parse()
@@ -30,7 +29,10 @@ func main() {
 	// Don't wrap long lines
 	goyaml.FutureLineWrap()
 
-	var outBytes []byte
+	var (
+		outBytes []byte
+		err      error
+	)
 
 	if *yamltojson || *y2j {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
@@ -57,21 +59,17 @@ func main() {
 	}
 
 	if *gentest {
-		// outBytes, err = generators.GenPage("genpage", args)
-		var err error
-		outBytes = []byte(`This is a GENTEST`)
+		outBytes, err = generators.GenPage("genpage", args)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
 	if *prefabFlag {
-		var err error
 		outBytes, err = prefab.GetBytesTemplate("stdout", args)
 		if err != nil {
 			log.Fatal(err)
 		}
-
 	}
 
 	// OUTPUT Stdout or file

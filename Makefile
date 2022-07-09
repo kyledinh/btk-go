@@ -18,10 +18,13 @@ GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 build:
 	@echo "## Building the binaries"
 	GOOS=darwin GOARCH=amd64 go build -o dist/btk-cli-macos cmd/cli/main.go
-	GOOS=linux GOARCH=386 go build -o dist/btk-cli-linux cmd/cli/main.go
+	GOOS=linux GOARCH=386 go build -ldflags="-X 'btk-go/pkg/version.Version=$(GIT_TAG)'" -o dist/btk-cli-linux cmd/cli/main.go
 	@echo "dist/"
 	@ls dist
 
+deploy:
+    DEPLOY_CMD := $(shell cp ./dist/btk-cli-macos /Users/kyle/bin/)
+	
 check:
 	@./scripts/dev/check.sh
 

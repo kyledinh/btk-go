@@ -1,6 +1,10 @@
 # Coding Guide
 > Opininated guide for coding in this repository. 
 
+* Correctness > Capability > Clarity
+* Parse > Process > Publish 
+* Dream > Document > Design > Demo > Deliver 
+
 **Table of Contents** 
 - [Configurations](#configuration)
 - [Guidelines](#guidelines)
