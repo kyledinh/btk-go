@@ -6,10 +6,10 @@ import (
 )
 
 var (
-	ErrResourceNotFound = errors.New("resource not found")
-	ErrResourceRead     = errors.New("resource not read")
-	ErrConversionFormat = errors.New("format conversion failed")
-	ErrCLIAction        = errors.New("cli action failed to execute")
+	ErrResourceNotFound = errors.New("RESOURCE_NOT_FOUND")
+	ErrResourceRead     = errors.New("RESOURCE_NOT_READ")
+	ErrConversionFormat = errors.New("CONVERSTION_FORMAT_FAILED")
+	ErrCLIAction        = errors.New("CLI_ACTION_FAILED")
 )
 
 type WrappedError struct {
