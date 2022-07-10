@@ -8,6 +8,7 @@ import (
 
 	"github.com/ghodss/yaml"
 	generators "github.com/kyledinh/btk-go/internal/generator"
+	"github.com/kyledinh/btk-go/pkg/docs"
 	"github.com/kyledinh/btk-go/pkg/prefab"
 	goyaml "gopkg.in/yaml.v2"
 )
@@ -19,6 +20,7 @@ func main() {
 	j2y := flag.Bool("j2y", false, "Convert the default json to yaml.")
 
 	gentest := flag.Bool("gentest", false, "Generate a test file")
+	docsFlag := flag.Bool("docs", false, "Output a documentation file")
 	prefabFlag := flag.Bool("prefab", false, "Output a prefab file")
 	outfile := flag.String("outfile", "", "")
 
@@ -60,6 +62,13 @@ func main() {
 
 	if *gentest {
 		outBytes, err = generators.GenPage("genpage", args)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if *docsFlag {
+		outBytes, err = docs.GetBytesTemplate("stdout", args)
 		if err != nil {
 			log.Fatal(err)
 		}
