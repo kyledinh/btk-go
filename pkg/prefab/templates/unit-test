@@ -18,14 +18,14 @@ func Test_GetRandomHyphenatedKeyByLimit(t *testing.T) {
 	}
 
 	tests := []struct {
-		name     string
-		limit    int
-		expected Want
+		name  string
+		limit int
+		want  Want
 	}{
 		{
 			name:  "Limit 1",
 			limit: 1,
-			expected: Want{
+			want: Want{
 				sliceLen:  1,
 				hyphenCnt: 0,
 			},
@@ -33,7 +33,7 @@ func Test_GetRandomHyphenatedKeyByLimit(t *testing.T) {
 		{
 			name:  "Limit 5",
 			limit: 5,
-			expected: Want{
+			want: Want{
 				sliceLen:  5,
 				hyphenCnt: 4,
 			},
@@ -41,7 +41,7 @@ func Test_GetRandomHyphenatedKeyByLimit(t *testing.T) {
 		{
 			name:  "Above the limit of 10 with 13",
 			limit: 13,
-			expected: Want{
+			want: Want{
 				sliceLen:  4,
 				hyphenCnt: 3,
 			},
@@ -52,8 +52,8 @@ func Test_GetRandomHyphenatedKeyByLimit(t *testing.T) {
 		t.Run(fmt.Sprintf("%d: %s", i, tt.name), func(t *testing.T) {
 			result := moxutil.GetRandomHyphenedKeyByLimit(tt.limit)
 			wordsArr := strings.Split(result, "-")
-			assert.Equal(t, tt.expected.sliceLen, len(wordsArr), "Wrong number of keys returned")
-			assert.Equal(t, tt.expected.hyphenCnt, strings.Count(result, "-"), "Wrong number of hyphens returned")
+			assert.Equal(t, tt.want.sliceLen, len(wordsArr), "Wrong number of keys returned")
+			assert.Equal(t, tt.want.hyphenCnt, strings.Count(result, "-"), "Wrong number of hyphens returned")
 		})
 	}
 }
