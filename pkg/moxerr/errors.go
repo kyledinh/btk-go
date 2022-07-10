@@ -14,16 +14,17 @@ var (
 
 type WrappedError struct {
 	Message string
-	MoxErr  error
+	MoxErr  *error
 }
 
 func (we *WrappedError) Error() string {
-	return fmt.Sprintf("message: %s", we.Message)
+	return fmt.Sprintf("wrapped message: %s", we.Message)
 }
 
-func NewWrappedError(message string, err error) *WrappedError {
-	return &WrappedError{
+func NewWrappedError(message string, err *error) WrappedError {
+	wrappedError := WrappedError{
 		Message: message,
 		MoxErr:  err,
 	}
+	return wrappedError
 }

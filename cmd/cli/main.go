@@ -14,6 +14,13 @@ import (
 	goyaml "gopkg.in/yaml.v2"
 )
 
+func errCheckLogFatal(err error, me *error) {
+	if err != nil {
+		log.Fatal(moxerr.NewWrappedError(err.Error(), me))
+		// panic(err)
+	}
+}
+
 func main() {
 	yamltojson := flag.Bool("yamltojson", false, "Convert yaml to json instead of the default json to yaml.")
 	y2j := flag.Bool("y2j", false, "Convert yaml to json instead of the default json to yaml.")
@@ -39,47 +46,33 @@ func main() {
 
 	if *yamltojson || *y2j {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrResourceNotFound))
-		}
+		errCheckLogFatal(err, &moxerr.ErrResourceRead)
 
 		outBytes, err = yaml.YAMLToJSON(inBytes)
-		if err != nil {
-			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrResourceNotFound))
-		}
+		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 
 	if *jsontoyaml || *j2y {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrResourceRead))
-		}
+		errCheckLogFatal(err, &moxerr.ErrResourceRead)
 
 		outBytes, err = yaml.JSONToYAML(inBytes)
-		if err != nil {
-			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrConversionFormat))
-		}
+		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 
 	if *gentest {
 		outBytes, err = generators.GenPage("genpage", args)
-		if err != nil {
-			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrCLIAction))
-		}
+		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
 	if *docsFlag {
 		outBytes, err = docs.GetBytesTemplate("stdout", args)
-		if err != nil {
-			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrCLIAction))
-		}
+		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
 	if *prefabFlag {
 		outBytes, err = prefab.GetBytesTemplate("stdout", args)
-		if err != nil {
-			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrCLIAction))
-		}
+		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
 	// OUTPUT Stdout or file

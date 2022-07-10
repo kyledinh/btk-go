@@ -195,6 +195,41 @@ if err := foo.Open("testfile.txt"); err != nil {
 </td></tr>
 </tbody></table>
 
+Compose an error message from the function call with a prefined error message in the moxerr packagCompose an error message from the function call with a prefined error message in the moxerr package
+
+<table>
+<thead><tr><th>Wrapping Error Message</th></tr></thead>
+<tbody>
+<tr><td>
+
+```go
+// package moxerr
+var (
+	ErrResourceNotFound = errors.New("resource not found")
+	ErrCLIAction        = errors.New("cli action failed to execute")
+)
+
+type WrappedError struct {
+	Message string
+	MoxErr  *error
+}
+
+func (we *WrappedError) Error() string {
+	return fmt.Sprintf("message: %s", we.Message)
+}
+
+func NewWrappedError(message string, err *error) *WrappedError {
+	return &WrappedError{
+		Message: message,
+		MoxErr:  err,
+	}
+}
+```
+
+</td></tr>
+</tbody></table>
+
+
 * https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully
 
 
