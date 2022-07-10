@@ -9,6 +9,7 @@ import (
 	"github.com/ghodss/yaml"
 	generators "github.com/kyledinh/btk-go/internal/generator"
 	"github.com/kyledinh/btk-go/pkg/docs"
+	"github.com/kyledinh/btk-go/pkg/moxerr"
 	"github.com/kyledinh/btk-go/pkg/prefab"
 	goyaml "gopkg.in/yaml.v2"
 )
@@ -39,45 +40,45 @@ func main() {
 	if *yamltojson || *y2j {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrResourceNotFound))
 		}
 
 		outBytes, err = yaml.YAMLToJSON(inBytes)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrResourceNotFound))
 		}
 	}
 
 	if *jsontoyaml || *j2y {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrResourceRead))
 		}
 
 		outBytes, err = yaml.JSONToYAML(inBytes)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrConversionFormat))
 		}
 	}
 
 	if *gentest {
 		outBytes, err = generators.GenPage("genpage", args)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrCLIAction))
 		}
 	}
 
 	if *docsFlag {
 		outBytes, err = docs.GetBytesTemplate("stdout", args)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrCLIAction))
 		}
 	}
 
 	if *prefabFlag {
 		outBytes, err = prefab.GetBytesTemplate("stdout", args)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(moxerr.NewWrappedError(err.Error(), moxerr.ErrCLIAction))
 		}
 	}
 
