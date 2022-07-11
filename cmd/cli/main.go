@@ -8,9 +8,8 @@ import (
 
 	"github.com/ghodss/yaml"
 	generators "github.com/kyledinh/btk-go/internal/generator"
-	"github.com/kyledinh/btk-go/pkg/docs"
+	"github.com/kyledinh/btk-go/pkg/codex"
 	"github.com/kyledinh/btk-go/pkg/moxerr"
-	"github.com/kyledinh/btk-go/pkg/prefab"
 	goyaml "gopkg.in/yaml.v2"
 )
 
@@ -22,19 +21,25 @@ func errCheckLogFatal(err error, me *error) {
 }
 
 func main() {
+
+	// PARSE INPUT
 	yamltojson := flag.Bool("yamltojson", false, "Convert yaml to json instead of the default json to yaml.")
 	y2j := flag.Bool("y2j", false, "Convert yaml to json instead of the default json to yaml.")
 	jsontoyaml := flag.Bool("jsontoyaml", false, "Convert default json to yaml.")
 	j2y := flag.Bool("j2y", false, "Convert the default json to yaml.")
 
 	gentest := flag.Bool("gentest", false, "Generate a test file")
+	genFlag := flag.String("gen", "", "Generator with an input")
+
 	docsFlag := flag.Bool("docs", false, "Output a documentation file")
-	prefabFlag := flag.Bool("prefab", false, "Output a prefab file")
-	outfile := flag.String("outfile", "", "")
+	snippetFlag := flag.Bool("snippet", false, "Output a snippet")
+
+	outfile := flag.String("o", "", "Specify a file to write to instead of STDOUT,  '-o=filename.ext'")
 
 	flag.Parse()
 	args := flag.Args()
 	_ = args
+	_ = genFlag
 
 	// Don't wrap long lines
 	goyaml.FutureLineWrap()
@@ -44,6 +49,7 @@ func main() {
 		err      error
 	)
 
+	// MAIN SWITCH
 	if *yamltojson || *y2j {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
 		errCheckLogFatal(err, &moxerr.ErrResourceRead)
@@ -66,18 +72,19 @@ func main() {
 	}
 
 	if *docsFlag {
-		outBytes, err = docs.GetBytesTemplate("stdout", args)
+		outBytes, err = codex.GetDoc("stdout", args)
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
-	if *prefabFlag {
-		outBytes, err = prefab.GetBytesTemplate("stdout", args)
+	if *snippetFlag {
+		outBytes, err = codex.GetSnippet("stdout", args)
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
-	// OUTPUT Stdout or file
+	// OUTPUT to file or STDOUT
 	if *outfile != "" {
-
+		err := ioutil.WriteFile(*outfile, outBytes, 0755)
+		errCheckLogFatal(err, &moxerr.ErrWriteFile)
 	} else {
 		os.Stdout.Write(outBytes)
 	}

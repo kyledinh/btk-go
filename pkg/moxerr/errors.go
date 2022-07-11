@@ -8,8 +8,9 @@ import (
 var (
 	ErrResourceNotFound = errors.New("RESOURCE_NOT_FOUND")
 	ErrResourceRead     = errors.New("RESOURCE_NOT_READ")
-	ErrConversionFormat = errors.New("CONVERSTION_FORMAT_FAILED")
+	ErrConversionFormat = errors.New("CONVERSION_FORMAT_FAILED")
 	ErrCLIAction        = errors.New("CLI_ACTION_FAILED")
+	ErrWriteFile        = errors.New("WRITE_FILE_FAILED")
 )
 
 type WrappedError struct {

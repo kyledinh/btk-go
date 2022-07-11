@@ -1,10 +1,10 @@
-package prefab_test
+package codex_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/kyledinh/btk-go/pkg/prefab"
+	"github.com/kyledinh/btk-go/pkg/codex"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,7 +31,7 @@ func Test_KeywordFromFilename(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("%d: %s", i, tt.name), func(t *testing.T) {
-			assert.Equal(t, tt.want.keyword, prefab.KeywordFromFilename(tt.filename))
+			assert.Equal(t, tt.want.keyword, codex.KeywordFromFilename(tt.filename))
 		})
 	}
 }

@@ -1,4 +1,4 @@
-package prefab
+package codex
 
 import (
 	"bytes"
@@ -10,19 +10,10 @@ import (
 	_ "github.com/davecgh/go-spew/spew"
 )
 
-//go:embed templates/*
+//go:embed snippets/*
 var prefabFS embed.FS
 
-type payload struct {
-	ba []byte
-}
-
-func KeywordFromFilename(filename string) string {
-	keyword := filename[strings.Index(filename, "/")+1:]
-	return keyword
-}
-
-func GetBytesTemplate(action string, args []string) ([]byte, error) {
+func GetSnippet(action string, args []string) ([]byte, error) {
 
 	_ = action
 	payload := payload{}
@@ -35,14 +26,14 @@ func GetBytesTemplate(action string, args []string) ([]byte, error) {
 	var templateFilename string
 	var availabeFiles []string
 
-	files, err := prefabFS.ReadDir("templates")
+	files, err := prefabFS.ReadDir("snippets")
 	if err != nil {
 		return nil, err
 	}
 
 	for _, file := range files {
 		if file.Name() == targetPrefab {
-			templateFilename = "templates/" + file.Name()
+			templateFilename = "snippets/" + file.Name()
 		}
 		if !file.IsDir() {
 			availabeFiles = append(availabeFiles, file.Name())
@@ -55,7 +46,7 @@ func GetBytesTemplate(action string, args []string) ([]byte, error) {
 		return []byte(templateFilename), err
 	}
 
-	// PARSE THE TARGE FILE
+	// PARSE THE TARGET FILE
 	tmpl, err := template.ParseFS(prefabFS, templateFilename)
 	if err != nil {
 		fmt.Println(err)
