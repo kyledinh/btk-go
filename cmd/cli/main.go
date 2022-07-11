@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/ghodss/yaml"
+	"github.com/kyledinh/btk-go/config"
 	"github.com/kyledinh/btk-go/pkg/codex"
 	"github.com/kyledinh/btk-go/pkg/moxerr"
 	goyaml "gopkg.in/yaml.v2"
@@ -32,6 +33,7 @@ func main() {
 
 	docsFlag := flag.Bool("docs", false, "Output a documentation file")
 	snipFlag := flag.Bool("snip", false, "Output a snip/snippet")
+	versionFlag := flag.Bool("v", false, "-v for version")
 
 	outfile := flag.String("o", "", "Specify a file to write to instead of STDOUT,  '-o=filename.ext'")
 
@@ -49,6 +51,12 @@ func main() {
 	)
 
 	// MAIN SWITCH
+	if *versionFlag {
+		outBytes = []byte(`btk-cli ` + config.Version)
+		os.Stdout.Write(outBytes)
+		os.Exit(0)
+	}
+
 	if *yamltojson || *y2j {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
 		errCheckLogFatal(err, &moxerr.ErrResourceRead)
