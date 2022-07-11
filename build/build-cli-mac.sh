@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SEMVAR=$(cat ../semvar)
+SEMVAR=$(head -n 1 ../semvar)
 GITTAG=$(git describe --tags --always --dirty)
 VERSION="$SEMVAR-$GITTAG"
 

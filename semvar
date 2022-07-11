@@ -1,1 +1,10 @@
+0.0.2
+
+- http-server serves embedded FileFS
+
 0.0.1
+
+- init commit  
+- cli serves embedded FileFS 
+- project setup: Makefile, code structure layout
+

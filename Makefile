@@ -7,7 +7,7 @@ OUTPUT_DIR = ./dist
 
 # Current version of the project.
 GITTAG ?= $(shell git describe --tags --always --dirty)
-SEMVAR ?= $(shell cat semvar)
+SEMVAR ?= $(shell head -n 1 semvar)
 
 # Golang standard bin directory.
 GOPATH ?= $(shell go env GOPATH)
