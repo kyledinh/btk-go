@@ -10,6 +10,7 @@ import (
 	"github.com/kyledinh/btk-go/config"
 	"github.com/kyledinh/btk-go/pkg/codex"
 	"github.com/kyledinh/btk-go/pkg/moxerr"
+	"github.com/kyledinh/btk-go/pkg/moxutil"
 	goyaml "gopkg.in/yaml.v2"
 )
 
@@ -61,7 +62,8 @@ func main() {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
 		errCheckLogFatal(err, &moxerr.ErrResourceRead)
 
-		outBytes, err = yaml.YAMLToJSON(inBytes)
+		raw, err := yaml.YAMLToJSON(inBytes)
+		outBytes = moxutil.SimplePrettyJson(raw)
 		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 
