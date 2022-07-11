@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/ghodss/yaml"
-	generators "github.com/kyledinh/btk-go/internal/generator"
 	"github.com/kyledinh/btk-go/pkg/codex"
 	"github.com/kyledinh/btk-go/pkg/moxerr"
 	goyaml "gopkg.in/yaml.v2"
@@ -32,7 +31,7 @@ func main() {
 	genFlag := flag.String("gen", "", "Generator with an input")
 
 	docsFlag := flag.Bool("docs", false, "Output a documentation file")
-	snippetFlag := flag.Bool("snippet", false, "Output a snippet")
+	snipFlag := flag.Bool("snip", false, "Output a snip/snippet")
 
 	outfile := flag.String("o", "", "Specify a file to write to instead of STDOUT,  '-o=filename.ext'")
 
@@ -67,7 +66,7 @@ func main() {
 	}
 
 	if *gentest {
-		outBytes, err = generators.GenPage("genpage", args)
+		outBytes, err = codex.GenPage("genpage", args)
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
@@ -76,8 +75,8 @@ func main() {
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
-	if *snippetFlag {
-		outBytes, err = codex.GetSnippet("stdout", args)
+	if *snipFlag {
+		outBytes, err = codex.GetSnip("stdout", args)
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 

@@ -12,7 +12,7 @@ import (
 
 //go:embed docs/*
 
-var docsFS embed.FS
+var DocsFS embed.FS
 
 func GetDoc(action string, args []string) ([]byte, error) {
 
@@ -27,7 +27,7 @@ func GetDoc(action string, args []string) ([]byte, error) {
 	var templateFilename string
 	var availabeFiles []string
 
-	files, err := docsFS.ReadDir("docs")
+	files, err := DocsFS.ReadDir("docs")
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func GetDoc(action string, args []string) ([]byte, error) {
 	}
 
 	// PARSE THE TARGET FILE
-	tmpl, err := template.ParseFS(docsFS, templateFilename)
+	tmpl, err := template.ParseFS(DocsFS, templateFilename)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -11,9 +11,9 @@ import (
 )
 
 //go:embed snippets/*
-var prefabFS embed.FS
+var SnippetsFS embed.FS
 
-func GetSnippet(action string, args []string) ([]byte, error) {
+func GetSnip(action string, args []string) ([]byte, error) {
 
 	_ = action
 	payload := payload{}
@@ -26,7 +26,7 @@ func GetSnippet(action string, args []string) ([]byte, error) {
 	var templateFilename string
 	var availabeFiles []string
 
-	files, err := prefabFS.ReadDir("snippets")
+	files, err := SnippetsFS.ReadDir("snippets")
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func GetSnippet(action string, args []string) ([]byte, error) {
 	}
 
 	// PARSE THE TARGET FILE
-	tmpl, err := template.ParseFS(prefabFS, templateFilename)
+	tmpl, err := template.ParseFS(SnippetsFS, templateFilename)
 	if err != nil {
 		fmt.Println(err)
 	}

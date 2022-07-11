@@ -1,4 +1,4 @@
-package generator
+package codex
 
 import (
 	"bytes"
@@ -8,12 +8,11 @@ import (
 	"io/ioutil"
 	"os"
 	"text/template"
-
-	_ "github.com/davecgh/go-spew/spew"
 )
 
 //go:embed templates/*
-var fs embed.FS
+
+var TemplatesFS embed.FS
 
 type Payload struct {
 	Pages []Page `json:"pages"`
@@ -45,7 +44,7 @@ func GenPage(action string, args []string) ([]byte, error) {
 
 	// spew.Dump(payload)
 
-	tmpl, err := template.ParseFS(fs, "templates/page.tmpl")
+	tmpl, err := template.ParseFS(TemplatesFS, "templates/page.tmpl")
 	if err != nil {
 		fmt.Println(err)
 	}
