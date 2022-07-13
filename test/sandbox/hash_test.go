@@ -1,4 +1,4 @@
-package hash_test
+package sandbox_test
 
 import (
 	"crypto/md5"

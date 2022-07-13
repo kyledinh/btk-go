@@ -8,6 +8,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/kr/pretty v0.3.0 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.0
 	gopkg.in/yaml.v2 v2.4.0
 )

@@ -1,6 +1,6 @@
 **Table of Contents** 
 
-- [BTK Project](#binary/bash-tool-kit-project)
+- [BTK Project](#bin-tool-kit-project)
   - [About the project](#about-the-project)
     - [API docs](#api-docs)
     - [Design](#design)
@@ -11,7 +11,7 @@
   - [Notes](#notes)
 
 
-# Binary/BASH Tool Kit Project
+# BIN Tool Kit Project
 
 ## About the project
 
