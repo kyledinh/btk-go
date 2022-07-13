@@ -47,6 +47,7 @@ func (s *Square) isValidSquare() (bool, error) {
 			// IF THE EDGE AND MATCH CAN FIT, THEN ADD TO EDGE AND REMOVE FROM AVAILABLE
 			if (sum(s.Edges[i]) + match) <= edgeLen {
 				s.Edges[i] = append(s.Edges[i], match)
+				continue
 			}
 			unusedMatches = append(unusedMatches, match)
 		}
@@ -133,6 +134,9 @@ func Test_Matches(t *testing.T) {
 			tt.square.Edges = [][]int{{}, {}, {}, {}}
 			result, err := tt.square.isValidSquare()
 			_ = err
+			fmt.Printf("======= %s \n", tt.name)
+			fmt.Printf("Input %v \n", tt.square.Matches)
+			fmt.Printf("Edges: %v \n\n", tt.square.Edges)
 			// assert.Equal(t, nil, err)
 			assert.Equal(t, tt.wantValid, result)
 		})
