@@ -1,6 +1,7 @@
 package sandbox_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -8,8 +9,8 @@ import (
 )
 
 type Square struct {
-	Edges       [][]int // 4 for a square
-	Matchsticks []int   // matchsticks of varying lengths
+	Edges       [][]int `json:"edges"`       // 4 for a square
+	Matchsticks []int   `json:"matchsticks"` // matchsticks of varying lengths
 }
 
 func (s *Square) isValidSquare() (bool, error) {
@@ -140,3 +141,55 @@ func Test_Matchesticks(t *testing.T) {
 		})
 	}
 }
+
+// VERSION 2 OF TESTING SUITE/WITH JSON INPUTS
+type TestableSquare struct {
+	Square
+	Title     string `json:"title"`
+	WantValid bool   `json:"want_valid"`
+	WantError string `json:"want_error"`
+}
+
+// WILL WORK FOR SIMPLE CASES, THAT REQUIRE ONE PASS, WILL NOT SURE MORE COMPLEX INPUTS OF MATCHES??
+func Test_Able_Matchesticks(t *testing.T) {
+	t.Parallel()
+
+	var tests []TestableSquare
+	json.Unmarshal(bufTestableSuite, &tests)
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("%d: %s", i, tt.Title), func(t *testing.T) {
+			tt.Square.Edges = [][]int{{}, {}, {}, {}}
+			result, err := tt.Square.isValidSquare()
+			_ = err
+			fmt.Printf("======= %s \n", tt.Title)
+			fmt.Printf("Input %v \n", tt.Square.Matchsticks)
+			fmt.Printf("Edges: %v \n\n", tt.Square.Edges)
+			// assert.Equal(t, nil, err)
+			assert.Equal(t, tt.WantValid, result)
+		})
+	}
+}
+
+var bufTestableSuite = []byte(`
+[
+ 	{
+ 		"title": "Test should pass with all 4 edges as 4",
+ 		"square": { "matchsticks": {4, 4, 4, 4} },
+	 	"want_valid": true,
+	 	"want_error": ""
+	},
+ 	{
+ 		"title": "Test total of 9 per egde",
+ 		"square": { "matchsticks": {9, 1, 3, 7, 4, 1, 6, 3, 2} },
+	 	"want_valid": true,
+	 	"want_error": ""
+	},
+ 	{
+ 		"title": "Test should pass with all 4 edges as 4",
+ 		"square": { "matchsticks": {4, 1, 3, 4, 5} },
+	 	"want_valid": false,
+	 	"want_error": ""
+	}
+]
+`)
