@@ -8,6 +8,7 @@ import (
 
 	"github.com/ghodss/yaml"
 	"github.com/kyledinh/btk-go/config"
+	"github.com/kyledinh/btk-go/pkg/codegen"
 	"github.com/kyledinh/btk-go/pkg/codex"
 	"github.com/kyledinh/btk-go/pkg/moxerr"
 	"github.com/kyledinh/btk-go/pkg/moxutil"
@@ -36,6 +37,8 @@ func main() {
 	snipFlag := flag.Bool("snip", false, "Output a snip/snippet")
 	versionFlag := flag.Bool("v", false, "-v for version")
 
+	yaml2goschema := flag.String("yaml2goschema", "spec.yaml", "Convert spec.yaml/your-spec.yaml to go schema.")
+
 	outfile := flag.String("o", "", "Specify a file to write to instead of STDOUT,  '-o=filename.ext'")
 
 	flag.Parse()
@@ -56,6 +59,11 @@ func main() {
 		outBytes = []byte(`btk-cli ` + config.Version)
 		os.Stdout.Write(outBytes)
 		os.Exit(0)
+	}
+
+	if *yaml2goschema != "" {
+		outBytes, err = codegen.MakeJsonSchemaFromYaml(*yaml2goschema)
+		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 
 	if *yamltojson || *y2j {

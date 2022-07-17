@@ -16,7 +16,7 @@ BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
 # ACTIONS
-.PHONY: build test
+.PHONY: build deploy test
 
 analyze:
 	@./scripts/dev/lint.sh
