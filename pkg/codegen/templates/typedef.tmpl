@@ -1,0 +1,11 @@
+
+{{/*
+{{range .Types}}
+{{ with .Schema.Description }}{{ . }}{{ else }}// {{.TypeName}} defines model for {{.JsonName}}.{{ end }}
+type {{.TypeName}} {{if .IsAlias }}={{end}} {{.Schema.TypeDecl}}
+{{end}}
+*/}}
+
+{{range .Types}}
+type {{.TypeName}} {{if .IsAlias }}={{end}} {{.Schema.TypeDecl}}
+{{end}}

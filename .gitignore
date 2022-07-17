@@ -6,7 +6,7 @@ dist/
 .vscode/
 
 
-ignore/
+ignored/
 ign-*
 
 __debug_bin
