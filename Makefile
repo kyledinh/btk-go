@@ -35,7 +35,10 @@ check:
 
 deploy:
     DEPLOY_CMD := $(shell cp ./dist/btk-cli-macos /Users/kyle/bin/)
-	
+
+generate:
+	go generate ./pkg/petstore/...
+
 lint: 
 	@./scripts/dev/lint.sh
 
