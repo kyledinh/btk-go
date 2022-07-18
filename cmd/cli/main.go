@@ -8,7 +8,9 @@ import (
 
 	"github.com/ghodss/yaml"
 	"github.com/kyledinh/btk-go/config"
+	"github.com/kyledinh/btk-go/ignored/codegen"
 	"github.com/kyledinh/btk-go/pkg/codex"
+	"github.com/kyledinh/btk-go/pkg/gencode"
 	"github.com/kyledinh/btk-go/pkg/moxerr"
 	"github.com/kyledinh/btk-go/pkg/moxutil"
 	goyaml "gopkg.in/yaml.v2"
@@ -36,6 +38,9 @@ func main() {
 	snipFlag := flag.Bool("snip", false, "Output a snip/snippet")
 	versionFlag := flag.Bool("v", false, "-v for version")
 
+	yaml2goschema := flag.String("yaml2goschema", "spec.yaml", "Convert spec.yaml/your-spec.yaml to go schema.")
+
+	inputfile := flag.String("i", "", "Specify a spec yaml file  '-i=spec.yaml'")
 	outfile := flag.String("o", "", "Specify a file to write to instead of STDOUT,  '-o=filename.ext'")
 
 	flag.Parse()
@@ -56,6 +61,11 @@ func main() {
 		outBytes = []byte(`btk-cli ` + config.Version)
 		os.Stdout.Write(outBytes)
 		os.Exit(0)
+	}
+
+	if *yaml2goschema != "" {
+		// outBytes, err = gencode.MakeJsonSchemaFromYaml(*yaml2goschema)
+		// errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 
 	if *yamltojson || *y2j {
@@ -80,6 +90,16 @@ func main() {
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
+	if *genFlag != "" && *inputfile != "" {
+		var config codegen.Configuration
+		config.PackageName = *genFlag
+		config.Generate.Models = true
+
+		log.Println("inputfile: ", *inputfile)
+		err := gencode.GenerateModels(*inputfile, config)
+		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
+	}
+
 	if *docsFlag {
 		outBytes, err = codex.GetDoc("stdout", args)
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
@@ -89,6 +109,8 @@ func main() {
 		outBytes, err = codex.GetSnip("stdout", args)
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
+
+	outBytes = moxutil.PrettyJsonBytes(outBytes)
 
 	// OUTPUT to file or STDOUT
 	if *outfile != "" {

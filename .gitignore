@@ -3,10 +3,11 @@
 .env 
 
 dist/
+cmd/cli/dist/
 .vscode/
 
 
-ignore/
+ignored/
 ign-*
 
 __debug_bin

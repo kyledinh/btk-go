@@ -175,21 +175,21 @@ var bufTestableSuite = []byte(`
 [
  	{
  		"title": "Test should pass with all 4 edges as 4",
- 		"square": { "matchsticks": {4, 4, 4, 4} },
 	 	"want_valid": true,
-	 	"want_error": ""
+	 	"want_error": "",
+ 		"square": { "matchsticks": {4, 4, 4, 4} }
 	},
  	{
  		"title": "Test total of 9 per egde",
- 		"square": { "matchsticks": {9, 1, 3, 7, 4, 1, 6, 3, 2} },
 	 	"want_valid": true,
-	 	"want_error": ""
+	 	"want_error": "",
+ 		"square": { "matchsticks": {9, 1, 3, 7, 4, 1, 6, 3, 2} }
 	},
  	{
  		"title": "Test should pass with all 4 edges as 4",
- 		"square": { "matchsticks": {4, 1, 3, 4, 5} },
 	 	"want_valid": false,
-	 	"want_error": ""
+	 	"want_error": "",
+ 		"square": { "matchsticks": {4, 1, 3, 4, 5} }
 	}
 ]
 `)
