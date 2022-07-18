@@ -64,8 +64,8 @@ func main() {
 	}
 
 	if *yaml2goschema != "" {
-		outBytes, err = gencode.MakeJsonSchemaFromYaml(*yaml2goschema)
-		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
+		// outBytes, err = gencode.MakeJsonSchemaFromYaml(*yaml2goschema)
+		// errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 
 	if *yamltojson || *y2j {

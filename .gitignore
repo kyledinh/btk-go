@@ -3,6 +3,7 @@
 .env 
 
 dist/
+cmd/cli/dist/
 .vscode/
 
 

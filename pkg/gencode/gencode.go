@@ -1,26 +1,32 @@
 package gencode
 
 import (
+	"bytes"
 	"embed"
 	"fmt"
 	"io/fs"
 	"io/ioutil"
 	"strings"
 	"text/template"
+	"unicode"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/kyledinh/btk-go/config"
 	"github.com/kyledinh/btk-go/ignored/codegen"
 )
 
 // Embed the templates directory
 //go:embed templates
-var templates embed.FS
+var TemplatesFS embed.FS
 
-// globalState stores all global state. Please don't put global state anywhere
-// else so that we can easily track it.
-var globalState struct {
-	options codegen.Configuration
-	spec    *openapi3.T
+type Payload struct {
+	SchemaName     string
+	ModuleName     string
+	Version        string
+	GoSchema       codegen.Schema
+	PubFieldLookup map[string]string
+	PubFieldName   func(string) string
+	FilterGoType   func(string) string
 }
 
 func GenerateModels(specFile string, opts codegen.Configuration) error {
@@ -40,14 +46,36 @@ func GenerateModels(specFile string, opts codegen.Configuration) error {
 			return fmt.Errorf("error converting Schema %s to Go type: %w", schemaName, err)
 		}
 		filename := "gen.model." + strings.ToLower(schemaName) + ".go"
-		outBytes := []byte(
-			`package model
-		
-		`)
 
-		//TODO: use template to generate model files
+		var pubFieldLookup = make(map[string]string, len(goSchema.Properties))
 
-		err = ioutil.WriteFile(filename, outBytes, 0755)
+		for _, field := range goSchema.Properties {
+			pubFieldLookup[field.JsonFieldName] = strings.ToUpper(field.JsonFieldName)
+		}
+
+		var payload = Payload{
+			SchemaName:     schemaName,
+			ModuleName:     "github.com/kyledinh/btk-cli-go",
+			Version:        config.Version,
+			GoSchema:       goSchema,
+			PubFieldLookup: pubFieldLookup,
+			PubFieldName:   PubCapitalize,
+			FilterGoType:   FilterGoType,
+		}
+
+		tmpl, err := template.ParseFS(TemplatesFS, "templates/model.tmpl")
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		var buf bytes.Buffer
+		err = tmpl.Execute(&buf, payload)
+		if err != nil {
+			fmt.Println(err)
+		}
+		outBytes := buf.Bytes()
+
+		err = ioutil.WriteFile("dist/"+filename, outBytes, 0755)
 		if err != nil {
 			return err
 		}
@@ -89,4 +117,21 @@ func SanitizeCode(goCode string) string {
 	// remove any byte-order-marks which break Go-Code
 	// See: https://groups.google.com/forum/#!topic/golang-nuts/OToNIPdfkks
 	return strings.Replace(goCode, "\uFEFF", "", -1)
+}
+
+func PubCapitalize(str string) string {
+	if str == "" {
+		return ""
+	}
+	runes := []rune(str)
+	runes[0] = unicode.ToUpper(runes[0])
+	return string(runes)
+}
+
+func FilterGoType(str string) string {
+	if str == "openapi_types.UUID" {
+		str = "uuid.UUID"
+	}
+
+	return str
 }

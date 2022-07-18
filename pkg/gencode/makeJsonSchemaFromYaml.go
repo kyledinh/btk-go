@@ -9,6 +9,9 @@ import (
 
 func MakeJsonSchemaFromYaml(filePath string) ([]byte, error) {
 	swagger, err := LoadSwagger(filePath)
+	if err != nil {
+		return nil, err
+	}
 
 	outBytes, err := json.Marshal(swagger)
 	return outBytes, err
