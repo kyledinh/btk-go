@@ -1,3 +1,8 @@
+0.0.3
+
+- cmd/cli/btk-cli -gen flag to generate from -i=spec.yaml 
+- go templates for models generation
+
 0.0.2
 
 - http-server serves embedded FileFS
