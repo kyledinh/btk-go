@@ -37,6 +37,10 @@ deploy:
 	cp ./dist/btk-cli-mac /Users/kyle/bin/btk-cli
 	btk-cli -v
 
+gen-petstore:
+	btk-cli -i=specs/petstore.1.0.0.yaml -gen=model
+	mv gen.model.* internal/model/.
+
 generate:
 	go generate ./pkg/petstore/...
 
