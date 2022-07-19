@@ -38,7 +38,7 @@ func main() {
 	snipFlag := flag.Bool("snip", false, "Output a snip/snippet")
 	versionFlag := flag.Bool("v", false, "-v for version")
 
-	yaml2goschema := flag.String("yaml2goschema", "spec.yaml", "Convert spec.yaml/your-spec.yaml to go schema.")
+	yaml2goschema := flag.String("yaml2goschema", "", "Convert spec.yaml/your-spec.yaml to go schema.")
 
 	inputfile := flag.String("i", "", "Specify a spec yaml file  '-i=spec.yaml'")
 	outfile := flag.String("o", "", "Specify a file to write to instead of STDOUT,  '-o=filename.ext'")
