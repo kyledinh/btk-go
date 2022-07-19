@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/deepmap/oapi-codegen/pkg/codegen"
 	"github.com/ghodss/yaml"
 	"github.com/kyledinh/btk-go/config"
-	"github.com/kyledinh/btk-go/ignored/codegen"
 	"github.com/kyledinh/btk-go/pkg/codex"
 	"github.com/kyledinh/btk-go/pkg/gencode"
 	"github.com/kyledinh/btk-go/pkg/moxerr"
@@ -64,8 +64,8 @@ func main() {
 	}
 
 	if *yaml2goschema != "" {
-		// outBytes, err = gencode.MakeJsonSchemaFromYaml(*yaml2goschema)
-		// errCheckLogFatal(err, &moxerr.ErrConversionFormat)
+		outBytes, err = gencode.MakeJsonSchemaFromYaml(*yaml2goschema)
+		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 
 	if *yamltojson || *y2j {
