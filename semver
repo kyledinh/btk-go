@@ -1,3 +1,8 @@
+0.0.4
+
+- update the go template docs 
+- clean the imports model gen
+
 0.0.3
 
 - cmd/cli/btk-cli -gen flag to generate from -i=spec.yaml 

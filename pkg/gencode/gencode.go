@@ -10,9 +10,9 @@ import (
 	"text/template"
 	"unicode"
 
+	"github.com/deepmap/oapi-codegen/pkg/codegen"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kyledinh/btk-go/config"
-	"github.com/kyledinh/btk-go/ignored/codegen"
 )
 
 // Embed the templates directory
@@ -22,11 +22,16 @@ var TemplatesFS embed.FS
 type Payload struct {
 	SchemaName     string
 	ModuleName     string
-	Version        string
+	Package        string
+	GenVersion     string
+	SpecVersion    string
+	SpecFile       string
 	GoSchema       codegen.Schema
+	Imports        []string
 	PubFieldLookup map[string]string
 	PubFieldName   func(string) string
 	FilterGoType   func(string) string
+	FilterGoImport func(string) string
 }
 
 func GenerateModels(specFile string, opts codegen.Configuration) error {
@@ -49,18 +54,28 @@ func GenerateModels(specFile string, opts codegen.Configuration) error {
 
 		var pubFieldLookup = make(map[string]string, len(goSchema.Properties))
 
+		imports := make([]string, 0)
 		for _, field := range goSchema.Properties {
 			pubFieldLookup[field.JsonFieldName] = strings.ToUpper(field.JsonFieldName)
+			entry := FilterGoImport(field.GoTypeDef())
+			if entry != "" {
+				imports = append(imports, entry)
+			}
 		}
 
 		var payload = Payload{
 			SchemaName:     schemaName,
 			ModuleName:     "github.com/kyledinh/btk-cli-go",
-			Version:        config.Version,
+			GenVersion:     config.Version,
+			SpecVersion:    spec.Info.Version,
+			SpecFile:       specFile,
+			Package:        "model",
 			GoSchema:       goSchema,
+			Imports:        imports,
 			PubFieldLookup: pubFieldLookup,
 			PubFieldName:   PubCapitalize,
 			FilterGoType:   FilterGoType,
+			FilterGoImport: FilterGoImport,
 		}
 
 		tmpl, err := template.ParseFS(TemplatesFS, "templates/model.tmpl")
@@ -132,6 +147,12 @@ func FilterGoType(str string) string {
 	if str == "openapi_types.UUID" {
 		str = "uuid.UUID"
 	}
-
 	return str
+}
+
+func FilterGoImport(str string) string {
+	if strings.Contains(str, "UUID") {
+		return "github.com/google/uuid"
+	}
+	return ""
 }
