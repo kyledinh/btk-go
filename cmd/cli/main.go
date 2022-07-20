@@ -42,6 +42,7 @@ func main() {
 
 	inputfile := flag.String("i", "", "Specify a spec yaml file  '-i=spec.yaml'")
 	outfile := flag.String("o", "", "Specify a file to write to instead of STDOUT,  '-o=filename.ext'")
+	destdir := flag.String("d", "", "Specify a directory to write to instead of ./,  '-d=output'")
 
 	flag.Parse()
 	args := flag.Args()
@@ -96,7 +97,7 @@ func main() {
 		config.Generate.Models = true
 
 		log.Println("inputfile: ", *inputfile)
-		err := gencode.GenerateModels(*inputfile, config)
+		err := gencode.GenerateModels(*inputfile, *destdir, config)
 		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 

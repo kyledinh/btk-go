@@ -1,18 +1,17 @@
 package gencode
 
 import (
-	"bytes"
 	"embed"
+	"encoding/json"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
+	"net/url"
 	"strings"
 	"text/template"
 	"unicode"
 
 	"github.com/deepmap/oapi-codegen/pkg/codegen"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/kyledinh/btk-go/config"
 )
 
 // Embed the templates directory
@@ -34,74 +33,27 @@ type Payload struct {
 	FilterGoImport func(string) string
 }
 
-func GenerateModels(specFile string, opts codegen.Configuration) error {
-	spec, err := LoadSwagger(specFile)
+func MakeJsonSchemaFromYaml(filePath string) ([]byte, error) {
+	swagger, err := LoadSwagger(filePath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	// Get the Schema keys in Schema, then iterate and fetch the schema
-	schemas := spec.Components.Schemas
-	for _, schemaName := range codegen.SortedSchemaKeys(schemas) {
-		schemaRef := schemas[schemaName]
-
-		goSchema, err := codegen.GenerateGoSchema(schemaRef, []string{schemaName})
-		_ = goSchema
-		if err != nil {
-			return fmt.Errorf("error converting Schema %s to Go type: %w", schemaName, err)
-		}
-		filename := "gen.model." + strings.ToLower(schemaName) + ".go"
-
-		var pubFieldLookup = make(map[string]string, len(goSchema.Properties))
-
-		imports := make([]string, 0)
-		for _, field := range goSchema.Properties {
-			pubFieldLookup[field.JsonFieldName] = strings.ToUpper(field.JsonFieldName)
-			entry := FilterGoImport(field.GoTypeDef())
-			if entry != "" {
-				imports = append(imports, entry)
-			}
-		}
-
-		var payload = Payload{
-			SchemaName:     schemaName,
-			ModuleName:     "github.com/kyledinh/btk-cli-go",
-			GenVersion:     config.Version,
-			SpecVersion:    spec.Info.Version,
-			SpecFile:       specFile,
-			Package:        "model",
-			GoSchema:       goSchema,
-			Imports:        imports,
-			PubFieldLookup: pubFieldLookup,
-			PubFieldName:   PubCapitalize,
-			FilterGoType:   FilterGoType,
-			FilterGoImport: FilterGoImport,
-		}
-
-		tmpl, err := template.ParseFS(TemplatesFS, "templates/model.tmpl")
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		var buf bytes.Buffer
-		err = tmpl.Execute(&buf, payload)
-		if err != nil {
-			fmt.Println(err)
-		}
-		outBytes := buf.Bytes()
-
-		err = ioutil.WriteFile("dist/"+filename, outBytes, 0755)
-		if err != nil {
-			return err
-		}
-
-	}
-
-	return err
+	outBytes, err := json.Marshal(swagger)
+	return outBytes, err
 }
 
-func Generate(spec *openapi3.T, opts codegen.Configuration) (string, error) {
-	return "", nil
+func LoadSwagger(filePath string) (swagger *openapi3.T, err error) {
+
+	loader := openapi3.NewLoader()
+	loader.IsExternalRefsAllowed = true
+
+	u, err := url.Parse(filePath)
+	if err == nil && u.Scheme != "" && u.Host != "" {
+		return loader.LoadFromURI(u)
+	} else {
+		return loader.LoadFromFile(filePath)
+	}
 }
 
 func LoadTemplates(src embed.FS, t *template.Template) error {
@@ -143,6 +95,15 @@ func PubCapitalize(str string) string {
 	return string(runes)
 }
 
+func PascalFrom_snake_case(snake_case string) string {
+	var PascalStr string = ""
+	snakes := strings.Split(snake_case, "_")
+	for _, snake := range snakes {
+		PascalStr += PubCapitalize(snake)
+	}
+	return PascalStr
+}
+
 func FilterGoType(str string) string {
 	if str == "openapi_types.UUID" {
 		str = "uuid.UUID"
@@ -153,6 +114,9 @@ func FilterGoType(str string) string {
 func FilterGoImport(str string) string {
 	if strings.Contains(str, "UUID") {
 		return "github.com/google/uuid"
+	}
+	if str == "time.Time" {
+		return "time"
 	}
 	return ""
 }

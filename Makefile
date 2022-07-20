@@ -29,6 +29,7 @@ build:
 	go build -ldflags "-X 'github.com/kyledinh/btk-go/config.Version=$(SEMVER)-$(GITTAG)'" -o dist/btk-cli-mac cmd/cli/main.go
 	@echo "dist/"
 	@ls dist
+	go build -ldflags "-X 'github.com/kyledinh/btk-go/config.Version=$(SEMVER)-$(GITTAG)'" -o dist/btk-http cmd/http-server/main.go
 
 check:
 	@./scripts/dev/check.sh
