@@ -3,7 +3,10 @@ package sandbox_test
 import (
 	"encoding/json"
 	"fmt"
+	"math/bits"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -107,14 +110,154 @@ func (sb *SudokuBoard) PoplateNeighborhood() {
 	}
 }
 
+func (sb *SudokuBoard) CalcPossibilitiesFromNeighborhood(i int) uint16 {
+	bitmap := uint16(511) // binary "111111111"
+	for _, square := range sb.Neighborhood[i] {
+		// bitclear &^
+		if bits.OnesCount16(sb.Grid[square]) == 1 { // Square is SOLVED with only 1 possility
+			bitmap = bitmap &^ sb.Grid[square]
+		}
+	}
+	return bitmap
+}
+
+func (sb *SudokuBoard) SweepMark() SudokuBoard {
+	var newBoard SudokuBoard
+	for i, square := range sb.Grid { // check if I need to copy by value or another kind of copy
+		newBoard.Grid[i] = square
+	}
+	newBoard.Neighborhood = sb.Neighborhood
+	for i := 0; i < 81; i++ {
+		bitmap := sb.Grid[i] // uint16 representatin of a bitmap: "001000101"
+
+		if bits.OnesCount16(bitmap) == 1 { // Square is SOLVED with only 1 poss
+			fmt.Printf("Solved for %v \n", i)
+		} else {
+			fmt.Printf("=== NEIGHBORHOOD %v \n", sb.Neighborhood[i])
+			for _, square := range sb.Neighborhood[i] {
+				// bitclear &^
+				if bits.OnesCount16(sb.Grid[square]) == 1 { // Square is SOLVED with only 1 possility
+					fmt.Printf("=== INDEX %v == BITUINT16 %v == NEIGHBOR %v \n", i, sb.Grid[square], IntToBinaryString(sb.Grid[square]))
+					bitmap = bitmap &^ sb.Grid[square]
+				}
+			}
+			newBoard.Grid[i] = bitmap
+		}
+		fmt.Printf("========== AFTER new value %v \n\n", IntToBinaryString(newBoard.Grid[i]))
+
+	}
+	return newBoard
+}
+
+func (sb *SudokuBoard) PrintBoard() {
+	fmt.Printf("%v \n", sb.Grid[:9])
+	fmt.Printf("%v \n", sb.Grid[9:18])
+	fmt.Printf("%v \n", sb.Grid[18:27])
+	fmt.Printf("%v \n", sb.Grid[27:36])
+	fmt.Printf("%v \n", sb.Grid[36:45])
+	fmt.Printf("%v \n", sb.Grid[45:54])
+	fmt.Printf("%v \n", sb.Grid[54:63])
+	fmt.Printf("%v \n", sb.Grid[63:72])
+	fmt.Printf("%v \n", sb.Grid[72:])
+}
+
+func (sb *SudokuBoard) PrintRoman() {
+	roman := make([]int, 81)
+	for i, val := range sb.Grid {
+		roman[i] = BitmapToRoman(val)
+	}
+	fmt.Printf("%v \n", roman[:9])
+	fmt.Printf("%v \n", roman[9:18])
+	fmt.Printf("%v \n", roman[18:27])
+	fmt.Printf("%v \n", roman[27:36])
+	fmt.Printf("%v \n", roman[36:45])
+	fmt.Printf("%v \n", roman[45:54])
+	fmt.Printf("%v \n", roman[54:63])
+	fmt.Printf("%v \n", roman[63:72])
+	fmt.Printf("%v \n", roman[72:])
+}
+
 func CreateSudokuBoard(ba []byte) (SudokuBoard, error) {
 	var sudoku SudokuBoard
 	err := json.Unmarshal(ba, &sudoku)
+	if err != nil {
+		// TODO: handle error
+	}
+	for i := 0; i < 81; i++ {
+		sudoku.Grid[i] = IntToBitmap(sudoku.Grid[i])
+	}
 	return sudoku, err
 }
 
-func Test_Sudoku_2_Neighborhoods(t *testing.T) {
-	t.Parallel()
+func BinaryLookup1to9(i uint16) (uint16, error) {
+	binaries := []string{
+		"111111111",
+		"000000001",
+		"000000010",
+		"000000100",
+		"000001000",
+		"000010000",
+		"000100000",
+		"001000000",
+		"010000000",
+		"100000000",
+	}
+	numInt, err := strconv.ParseInt(binaries[i], 2, 64)
+	return uint16(numInt), err
+}
+
+func IntToBinaryString(i uint16) string {
+	binstr := strconv.FormatInt(int64(i), 2)
+	return binstr
+}
+
+func IntToBitmap(i uint16) uint16 {
+	bitmap, err := BinaryLookup1to9(i)
+	if err != nil {
+		// TODO: handke error instead of returning 0
+		return uint16(511) // binary "111111111"
+	}
+	return bitmap
+}
+
+func BitmapToRoman(bm uint16) int {
+	// bin := strconv.FormatInt(int64(bm), 2)
+	// roman, err := strconv.ParseInt(bin, 2, 64)
+	// TODO: find better way to find exp of 2
+	if bm == 1 {
+		return 1
+	}
+	if bm == 2 {
+		return 2
+	}
+	if bm == 4 {
+		return 3
+	}
+	if bm == 8 {
+		return 4
+	}
+	if bm == 16 {
+		return 5
+	}
+	if bm == 32 {
+		return 6
+	}
+	if bm == 64 {
+		return 7
+	}
+	if bm == 128 {
+		return 8
+	}
+	if bm == 256 {
+		return 9
+	}
+	return 0
+}
+
+// TESTS
+
+func Test_Sudoku_2_BIGTEST(t *testing.T) {
+	// t.Parallel()
 
 	tests := []struct {
 		name    string
@@ -136,8 +279,64 @@ func Test_Sudoku_2_Neighborhoods(t *testing.T) {
 			assert.Equal(t, []int{1, 2, 9, 10, 11, 18, 19, 20, 3, 4, 5, 6, 7, 8, 27, 36, 45, 54, 63, 72}, sudoku.Neighborhood[0])
 			assert.Equal(t, []int{33, 34, 35, 42, 43, 44, 51, 52, 45, 46, 47, 48, 49, 50, 8, 17, 26, 62, 71, 80}, sudoku.Neighborhood[53])
 			assert.Equal(t, []int{57, 58, 59, 67, 68, 75, 76, 77, 63, 64, 65, 69, 70, 71, 3, 12, 21, 30, 39, 48}, sudoku.Neighborhood[66])
+
+			secondBoard := sudoku.SweepMark()
+			time.Sleep(3 * time.Second)
+			thirdBoard := secondBoard.SweepMark()
+			fourthBoard := thirdBoard.SweepMark()
+
+			time.Sleep(time.Second)
+			println("===========")
+			sudoku.PrintRoman()
+
+			time.Sleep(time.Second)
+			println("-----------")
+			secondBoard.PrintRoman()
+
+			time.Sleep(time.Second)
+			println("-----------")
+			thirdBoard.PrintRoman()
+
+			time.Sleep(time.Second)
+			println("-----------")
+			fourthBoard.PrintRoman()
+
 		})
 	}
+}
+
+func Test_MarkSweep(t *testing.T) {
+	t.Run(fmt.Sprintf("Test: %s", "Mark dna Sweep"), func(t *testing.T) {
+
+		sb, err := CreateSudokuBoard(datum_2)
+		assert.Equal(t, nil, err)
+		sb.PoplateNeighborhood()
+		newBoard := sb
+
+		for i := 0; i < 81; i++ {
+			bitmap := sb.Grid[i]
+			bitCount := bits.OnesCount16(bitmap)
+			fmt.Printf("for %d count is %d \n", i, bitCount)
+			if bitCount == 1 {
+				fmt.Printf("Solved for %v \n", i)
+			} else {
+				fmt.Printf("doing(%v) with: ", i)
+				fmt.Printf("========== BEFORE %v \n", IntToBinaryString(newBoard.Grid[i]))
+				// newBoard.Grid[i] = newBoard.CalcPossibilitiesFromNeighborhood(i)
+				for _, square := range sb.Neighborhood[i] {
+					// bitclear &^
+					if bits.OnesCount16(sb.Grid[square]) == 1 { // Square is SOLVED with only 1 possility
+						fmt.Printf("========== NEIGHBOR %v \n", IntToBinaryString(sb.Grid[square]))
+						bitmap = bitmap &^ sb.Grid[square]
+					}
+
+				}
+				newBoard.Grid[i] = bitmap
+			}
+			fmt.Printf("========== AFTER new value %v \n\n", IntToBinaryString(newBoard.Grid[i]))
+		}
+
+	})
 }
 
 var datum_2 = []byte(`
