@@ -3,6 +3,7 @@ package sudoku_test
 import (
 	"fmt"
 	"math/bits"
+	"strconv"
 	"testing"
 	"time"
 
@@ -37,20 +38,20 @@ func Test_Sudoku_2_BIGTEST(t *testing.T) {
 			fourthBoard := thirdBoard.SweepMark()
 
 			time.Sleep(time.Second)
-			println("======" + sudoku.Name + "========")
-			sudoku.PrintRoman()
+			println("======" + sudoku.Name + "== [ " + strconv.Itoa(sudoku.SolvedCnt()) + "]=======")
+			sudoku.PrintDecimal()
 
 			time.Sleep(time.Second)
-			println("-----------")
-			secondBoard.PrintRoman()
+			println("---- " + strconv.Itoa(secondBoard.SolvedCnt()) + " -------")
+			secondBoard.PrintDecimal()
 
 			time.Sleep(time.Second)
-			println("-----------")
-			thirdBoard.PrintRoman()
+			println("---- " + strconv.Itoa(thirdBoard.SolvedCnt()) + " -------")
+			thirdBoard.PrintDecimal()
 
 			time.Sleep(time.Second)
-			println("-----------")
-			fourthBoard.PrintRoman()
+			println("---- " + strconv.Itoa(fourthBoard.SolvedCnt()) + " -------")
+			fourthBoard.PrintDecimal()
 
 		})
 	}

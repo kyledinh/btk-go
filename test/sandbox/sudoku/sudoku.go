@@ -24,6 +24,7 @@ type SudokuBoard struct {
 	// 63,64,65 66,67,68 69,70,71
 	// 72,73,74 75,76,77 78,79,80
 	Neighborhood [][]int
+	Verbose      bool
 }
 
 // SUDOKUBOARD METHODS
@@ -90,18 +91,18 @@ func (sb *SudokuBoard) SweepMark() SudokuBoard {
 		bitmap := sb.Grid[i] // uint16 representatin of a bitmap: "001000101"
 
 		if bits.OnesCount16(bitmap) == 1 { // Square is SOLVED with only 1 possility, 1 bit flipped.
-			fmt.Printf("Solved for %v \n", i)
+			VerbosePrint(sb.Verbose, fmt.Sprintf("Solved for %v \n", i))
 		} else { // Square has 2 or more possibilities
-			fmt.Printf("=== NEIGHBORHOOD %v \n", sb.Neighborhood[i])
+			VerbosePrint(sb.Verbose, fmt.Sprintf("=== NEIGHBORHOOD %v \n", sb.Neighborhood[i]))
 			for _, square := range sb.Neighborhood[i] {
 				if bits.OnesCount16(sb.Grid[square]) == 1 { // The Neighbor is SOLVED, use it to calculate
-					fmt.Printf("=== INDEX %v == BITUINT16 %v == NEIGHBOR %v \n", i, sb.Grid[square], IntToBinaryString(sb.Grid[square]))
+					VerbosePrint(sb.Verbose, fmt.Sprintf("=== INDEX %v == BITUINT16 %v == NEIGHBOR %v \n", i, sb.Grid[square], IntToBinaryString(sb.Grid[square])))
 					bitmap = bitmap &^ sb.Grid[square] // bitclear &^ : if matches a 1 in the square, flip to 0 in the bitmap
 				}
 			}
 			newBoard.Grid[i] = bitmap
 		}
-		fmt.Printf("========== AFTER new value %v \n\n", IntToBinaryString(newBoard.Grid[i]))
+		VerbosePrint(sb.Verbose, fmt.Sprintf("========== AFTER new value %v \n\n", IntToBinaryString(newBoard.Grid[i])))
 
 	}
 	return newBoard
@@ -121,20 +122,29 @@ func (sb *SudokuBoard) PrintBoard() {
 }
 
 // Displays the roman numerals 1-9, or 0
-func (sb *SudokuBoard) PrintRoman() {
-	roman := make([]int, 81)
+func (sb *SudokuBoard) PrintDecimal() {
+	decimal := make([]int, 81)
 	for i, val := range sb.Grid {
-		roman[i] = BitmapToRoman(val)
+		decimal[i] = BitmapToDecimal(val)
 	}
-	fmt.Printf("%v \n", roman[:9])
-	fmt.Printf("%v \n", roman[9:18])
-	fmt.Printf("%v \n", roman[18:27])
-	fmt.Printf("%v \n", roman[27:36])
-	fmt.Printf("%v \n", roman[36:45])
-	fmt.Printf("%v \n", roman[45:54])
-	fmt.Printf("%v \n", roman[54:63])
-	fmt.Printf("%v \n", roman[63:72])
-	fmt.Printf("%v \n", roman[72:])
+	fmt.Printf("%v \n", decimal[:9])
+	fmt.Printf("%v \n", decimal[9:18])
+	fmt.Printf("%v \n", decimal[18:27])
+	fmt.Printf("%v \n", decimal[27:36])
+	fmt.Printf("%v \n", decimal[36:45])
+	fmt.Printf("%v \n", decimal[45:54])
+	fmt.Printf("%v \n", decimal[54:63])
+	fmt.Printf("%v \n", decimal[63:72])
+	fmt.Printf("%v \n", decimal[72:])
+}
+
+func (sb *SudokuBoard) SolvedCnt() (cnt int) {
+	for _, bitmap := range sb.Grid {
+		if bits.OnesCount16(bitmap) == 1 {
+			cnt++
+		}
+	}
+	return
 }
 
 // PUBLIC FUNCTIONS
@@ -145,9 +155,11 @@ func CreateSudokuBoard(ba []byte) (SudokuBoard, error) {
 	if err != nil {
 		return sudoku, err
 	}
-	// Converts the JSON roman number input into uint16 bitmap, ie 3 -> 4 | "0000000100" 3rd binary position
+	// Converts the JSON decimal number input into uint16 bitmap,
+	// ie 3 ->  4 | "0000000100" 3rd binary position
+	// ie 5 -> 16 | "0000010000" 5th binary position
 	for i := 0; i < 81; i++ {
-		sudoku.Grid[i] = RomanToBitmap(sudoku.Grid[i])
+		sudoku.Grid[i] = DecimalToBitmap(sudoku.Grid[i])
 	}
 	return sudoku, err
 }
@@ -174,7 +186,7 @@ func IntToBinaryString(i uint16) string {
 	return binstr
 }
 
-func RomanToBitmap(i uint16) uint16 {
+func DecimalToBitmap(i uint16) uint16 {
 	bitmap, err := BinaryLookup1to9(i)
 	if err != nil {
 		// TODO: handke error instead of returning 0
@@ -183,9 +195,9 @@ func RomanToBitmap(i uint16) uint16 {
 	return bitmap
 }
 
-func BitmapToRoman(bm uint16) int {
+func BitmapToDecimal(bm uint16) int {
 	// bin := strconv.FormatInt(int64(bm), 2)
-	// roman, err := strconv.ParseInt(bin, 2, 64)
+	// decimal, err := strconv.ParseInt(bin, 2, 64)
 	// TODO: find better way to find exp of 2
 	if bm == 1 {
 		return 1
@@ -248,4 +260,10 @@ func RemoveIntElement(s []int, element int) []int {
 		}
 	}
 	return newArray
+}
+
+func VerbosePrint(verbose bool, message string) {
+	if verbose {
+		fmt.Print(message)
+	}
 }
