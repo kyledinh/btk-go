@@ -25,9 +25,42 @@ type SudokuBoard struct {
 	// 72,73,74 75,76,77 78,79,80
 	Neighborhood [][]int
 	Verbose      bool
+	Summary      struct {
+		Steps       int `json:"steps"`
+		SolvedStart int `json:"solved_start"`
+		SolvedEnd   int `json:"solved_end"`
+	}
 }
 
 // SUDOKUBOARD METHODS
+
+func (sb *SudokuBoard) Solve() (final SudokuBoard) {
+	history := make([]SudokuBoard, 0)
+	// origin := SudokuBoard{
+	// 	Grid: sb.Grid,
+	// }
+	// origin.Summary.SolvedStart = sb.SolvedCnt()
+	sb.Summary.SolvedStart = sb.SolvedCnt()
+	firstBoard := sb.SweepMark()
+	history = append(history, *sb)
+	history = append(history, firstBoard)
+	for i := 2; history[i-1].SolvedCnt() < 81; i++ {
+		before := history[i-2]
+		previous := history[i-1]
+		if previous.SolvedCnt() == before.SolvedCnt() {
+			break
+		}
+		next := previous.SweepMark()
+		history = append(history, next)
+	}
+	finalIndex := len(history)
+	final = history[finalIndex-1]
+	final.Summary.SolvedStart = sb.SolvedCnt()
+	final.Summary.SolvedEnd = final.SolvedCnt()
+	final.Summary.Steps = finalIndex
+
+	return final
+}
 
 func (sb *SudokuBoard) PoplateNeighborhood() {
 	sb.Neighborhood = make([][]int, 81)
@@ -103,8 +136,9 @@ func (sb *SudokuBoard) SweepMark() SudokuBoard {
 			newBoard.Grid[i] = bitmap
 		}
 		VerbosePrint(sb.Verbose, fmt.Sprintf("========== AFTER new value %v \n\n", IntToBinaryString(newBoard.Grid[i])))
-
 	}
+	newBoard.Summary.SolvedStart = sb.SolvedCnt()
+	newBoard.Summary.SolvedEnd = newBoard.SolvedCnt()
 	return newBoard
 }
 
@@ -161,6 +195,8 @@ func CreateSudokuBoard(ba []byte) (SudokuBoard, error) {
 	for i := 0; i < 81; i++ {
 		sudoku.Grid[i] = DecimalToBitmap(sudoku.Grid[i])
 	}
+	sudoku.PoplateNeighborhood()
+
 	return sudoku, err
 }
 

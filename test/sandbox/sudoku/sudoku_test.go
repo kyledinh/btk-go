@@ -10,6 +10,37 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_Sudoku_MainTest_Solve(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		payload []byte
+	}{
+		{
+			name:    "SDK 2",
+			payload: datum_2,
+		},
+		{
+			name:    "SDK 3",
+			payload: datum_3,
+		},
+		{
+			name:    "SDK 4",
+			payload: datum_4,
+		},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("%d: %s", i, tt.name), func(t *testing.T) {
+			sudoku, err := CreateSudokuBoard(tt.payload)
+			assert.Equal(t, nil, err)
+			final := sudoku.Solve()
+			assert.Equal(t, 81, final.SolvedCnt())
+		})
+	}
+}
+
 func Test_Sudoku_2_BIGTEST(t *testing.T) {
 	t.Parallel()
 
@@ -19,7 +50,7 @@ func Test_Sudoku_2_BIGTEST(t *testing.T) {
 	}{
 		{
 			name:    "SDK 2",
-			payload: datum_3,
+			payload: datum_4,
 		},
 	}
 
@@ -27,18 +58,16 @@ func Test_Sudoku_2_BIGTEST(t *testing.T) {
 		t.Run(fmt.Sprintf("%d: %s", i, tt.name), func(t *testing.T) {
 			sudoku, err := CreateSudokuBoard(tt.payload)
 			assert.Equal(t, nil, err)
-			sudoku.PoplateNeighborhood()
 			assert.Equal(t, []int{1, 2, 9, 10, 11, 18, 19, 20, 3, 4, 5, 6, 7, 8, 27, 36, 45, 54, 63, 72}, sudoku.Neighborhood[0])
 			assert.Equal(t, []int{33, 34, 35, 42, 43, 44, 51, 52, 45, 46, 47, 48, 49, 50, 8, 17, 26, 62, 71, 80}, sudoku.Neighborhood[53])
 			assert.Equal(t, []int{57, 58, 59, 67, 68, 75, 76, 77, 63, 64, 65, 69, 70, 71, 3, 12, 21, 30, 39, 48}, sudoku.Neighborhood[66])
 
 			secondBoard := sudoku.SweepMark()
-			time.Sleep(3 * time.Second)
 			thirdBoard := secondBoard.SweepMark()
 			fourthBoard := thirdBoard.SweepMark()
 
 			time.Sleep(time.Second)
-			println("======" + sudoku.Name + "== [ " + strconv.Itoa(sudoku.SolvedCnt()) + "]=======")
+			println("======" + sudoku.Name + "==[" + strconv.Itoa(sudoku.SolvedCnt()) + "]=======")
 			sudoku.PrintDecimal()
 
 			time.Sleep(time.Second)
@@ -62,7 +91,7 @@ func Test_MarkSweep(t *testing.T) {
 
 		sb, err := CreateSudokuBoard(datum_2)
 		assert.Equal(t, nil, err)
-		sb.PoplateNeighborhood()
+		// sb.PoplateNeighborhood()
 		newBoard := sb
 
 		for i := 0; i < 81; i++ {
@@ -79,7 +108,6 @@ func Test_MarkSweep(t *testing.T) {
 						fmt.Printf("========== NEIGHBOR %v \n", IntToBinaryString(sb.Grid[square]))
 						bitmap = bitmap &^ sb.Grid[square]
 					}
-
 				}
 				newBoard.Grid[i] = bitmap
 			}

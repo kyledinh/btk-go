@@ -1,6 +1,11 @@
+0.0.6
+
+- Solve function for Sudoku
+
 0.0.5
 
 - Pascal names from snake_case
+- Sudoku in test/sandbox
 
 0.0.4
 
