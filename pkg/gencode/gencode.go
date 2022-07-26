@@ -33,6 +33,10 @@ type Payload struct {
 	FilterGoImport func(string) string
 }
 
+type Config struct {
+	Options string // TODO: fill in fields as needed
+}
+
 func MakeJsonSchemaFromYaml(filePath string) ([]byte, error) {
 	swagger, err := LoadSwagger(filePath)
 	if err != nil {

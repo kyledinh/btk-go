@@ -31,8 +31,8 @@ func main() {
 	jsontoyaml := flag.Bool("jsontoyaml", false, "Convert default json to yaml.")
 	j2y := flag.Bool("j2y", false, "Convert the default json to yaml.")
 
-	gentest := flag.Bool("gentest", false, "Generate a test file")
-	genFlag := flag.String("gen", "", "Generator with an input")
+	genTest := flag.Bool("gentest", false, "Generate a test file")
+	genModels := flag.String("gen", "", "Generator with an input")
 
 	docsFlag := flag.Bool("docs", false, "Output a documentation file")
 	snipFlag := flag.Bool("snip", false, "Output a snip/snippet")
@@ -47,7 +47,7 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 	_ = args
-	_ = genFlag
+	_ = genModels
 
 	// Don't wrap long lines
 	goyaml.FutureLineWrap()
@@ -80,20 +80,21 @@ func main() {
 
 	if *jsontoyaml || *j2y {
 		inBytes, err := ioutil.ReadAll(os.Stdin)
-		errCheckLogFatal(err, &moxerr.ErrResourceRead)
 
 		outBytes, err = yaml.JSONToYAML(inBytes)
 		errCheckLogFatal(err, &moxerr.ErrConversionFormat)
 	}
 
-	if *gentest {
-		outBytes, err = codex.GenPage("genpage", args)
+	if *genTest && *inputfile != "" {
+		var cfg gencode.Config
+		// outBytes, err = codex.GenPage("genpage", args)
+		err := gencode.GenerateTests(*inputfile, *destdir, cfg)
 		errCheckLogFatal(err, &moxerr.ErrCLIAction)
 	}
 
-	if *genFlag != "" && *inputfile != "" {
+	if *genModels != "" && *inputfile != "" {
 		var config codegen.Configuration
-		config.PackageName = *genFlag
+		config.PackageName = *genModels
 		config.Generate.Models = true
 
 		log.Println("inputfile: ", *inputfile)
