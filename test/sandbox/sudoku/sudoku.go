@@ -25,9 +25,43 @@ type SudokuBoard struct {
 	// 72,73,74 75,76,77 78,79,80
 	Neighborhood [][]int
 	Verbose      bool
+	Summary      struct {
+		Steps       int `json:"steps"`
+		SolvedStart int `json:"solved_start"`
+		SolvedEnd   int `json:"solved_end"`
+	}
 }
 
 // SUDOKUBOARD METHODS
+
+func (sb *SudokuBoard) Solve() (final SudokuBoard) {
+
+	history := make([]SudokuBoard, 0)
+	sb.Summary.SolvedStart = sb.SolvedCnt()
+	history = append(history, *sb)
+
+	firstBoard := sb.SweepMark()
+	history = append(history, firstBoard)
+
+	for i := 2; history[i-1].SolvedCnt() < 81; i++ {
+		before := history[i-2]
+		previous := history[i-1]
+		// Check if there was progress from before to previous
+		if previous.SolvedCnt() == before.SolvedCnt() {
+			break
+		}
+		next := previous.SweepMark()
+		history = append(history, next)
+	}
+
+	finalIndex := len(history)
+	final = history[finalIndex-1]
+	final.Summary.SolvedStart = sb.SolvedCnt()
+	final.Summary.SolvedEnd = final.SolvedCnt()
+	final.Summary.Steps = finalIndex
+
+	return final
+}
 
 func (sb *SudokuBoard) PoplateNeighborhood() {
 	sb.Neighborhood = make([][]int, 81)
@@ -103,8 +137,9 @@ func (sb *SudokuBoard) SweepMark() SudokuBoard {
 			newBoard.Grid[i] = bitmap
 		}
 		VerbosePrint(sb.Verbose, fmt.Sprintf("========== AFTER new value %v \n\n", IntToBinaryString(newBoard.Grid[i])))
-
 	}
+	newBoard.Summary.SolvedStart = sb.SolvedCnt()
+	newBoard.Summary.SolvedEnd = newBoard.SolvedCnt()
 	return newBoard
 }
 
@@ -161,6 +196,8 @@ func CreateSudokuBoard(ba []byte) (SudokuBoard, error) {
 	for i := 0; i < 81; i++ {
 		sudoku.Grid[i] = DecimalToBitmap(sudoku.Grid[i])
 	}
+	sudoku.PoplateNeighborhood()
+
 	return sudoku, err
 }
 
@@ -252,6 +289,17 @@ func contains(s []int, e int) bool {
 	return false
 }
 
+func strIsNumeral(str string) bool {
+	s := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
 func RemoveIntElement(s []int, element int) []int {
 	newArray := make([]int, 0)
 	for _, val := range s {
@@ -266,4 +314,57 @@ func VerbosePrint(verbose bool, message string) {
 	if verbose {
 		fmt.Print(message)
 	}
+}
+
+// LEETCODE WRAPPER
+
+func (sb *SudokuBoard) LeetOut() [][]string {
+	var gridStr [81]string
+	out := make([][]string, 9)
+	for i, bitmap := range sb.Grid {
+		gridStr[i] = fmt.Sprint(BitmapToDecimal(bitmap))
+	}
+	out[0] = gridStr[:9]
+	out[1] = gridStr[9:18]
+	out[2] = gridStr[18:27]
+	out[3] = gridStr[27:36]
+	out[4] = gridStr[36:45]
+	out[5] = gridStr[45:54]
+	out[6] = gridStr[54:63]
+	out[7] = gridStr[63:72]
+	out[8] = gridStr[72:]
+	return out
+}
+
+func leet2bitmap(str string) (bitmap uint16, err error) {
+	if strIsNumeral(str) {
+		intNum, err := strconv.Atoi(str)
+		return DecimalToBitmap(uint16(intNum)), err
+	}
+	return DecimalToBitmap(uint16(0)), err
+}
+
+func solveSudoku(board [][]string) (solution [][]string) {
+	oneline := make([]string, 0)
+	for _, sa := range board {
+		oneline = append(oneline, sa...)
+	}
+
+	var grid [81]uint16
+	for i, str := range oneline {
+		square, err := leet2bitmap(str)
+		grid[i] = square
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	sudokuBoard := SudokuBoard{
+		Name: "Leet",
+		Grid: grid,
+	}
+	sudokuBoard.PoplateNeighborhood()
+	final := sudokuBoard.Solve()
+
+	return final.LeetOut()
 }

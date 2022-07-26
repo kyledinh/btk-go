@@ -1,6 +1,12 @@
+0.0.6
+
+- Solve function for Sudoku
+- -gentest Flag will generate a unittest for functions in .go file
+
 0.0.5
 
 - Pascal names from snake_case
+- Sudoku in test/sandbox
 
 0.0.4
 
