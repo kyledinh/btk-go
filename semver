@@ -1,7 +1,7 @@
 0.0.6
 
 - Solve function for Sudoku
-- -gentest Flag will generate a unittest for functions in .go file
+- -gentest Flag will generate a unit _test.go file for functions in .go file
 
 0.0.5
 

@@ -1,0 +1,64 @@
+#!/bin/bash
+# DB Tool for running a SQL Server Container 
+version=v0.2
+
+function fn_help {
+cat << EndOfHelp
+HELP: (dbt) Database Tool Kit $version
+
+MACROS:
+ex <search-image> <commands...> ) will find a container by search term then execute a command 
+shell <image>                   ) will launch container and -it bash shell
+EndOfHelp
+}
+
+function fn_exec {
+	if [ "$#" -le 1 ]; then
+		echo "USAGE: dt ex <search-term> <command>. You need a command!"
+		exit 1
+	fi
+	echo "Search for container with $1 term to log"
+	pod=$(docker ps | grep $1 | awk '{print $1}')
+    echo "==================="
+    echo $pod
+    echo "==================="
+	if [ -z "$pod" ]; then
+		echo "No container id found!"
+		exit 1
+	fi
+	echo "> docker exec -it $pod $2 ${@:3}"
+	docker exec -it $pod $2 ${@:3}
+	exit 0
+}
+
+function fn_shell {
+	if [ "$#" -le 1 ]; then
+		ENTRYPOINT=bash
+	else
+		ENTRYPOINT=$2
+	fi
+	echo "docker run -it --rm -v $(pwd):/host --entrypoint $ENTRYPOINT $1" 
+	docker run -it --rm -v $(pwd):/host --entrypoint $ENTRYPOINT $1 
+}
+
+
+if [ "$#" -eq 0 ]; then
+	echo "USAGE: $0 <arguments>. Try 'dbt help'."
+	exit 1
+fi
+
+case "$1" in
+	ex)
+		fn_exec ${@:2}
+		exit 0;;
+	help)
+		fn_help
+		exit 0;;
+	shell)
+		fn_exec ${@:2}
+		exit 0;;
+	*)
+		fn_help
+		exit 0;;
+esac
+

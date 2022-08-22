@@ -1,0 +1,9 @@
+lookup := make(map[int]int)
+for i, x := range nums {
+	lookup[x] = i
+}
+
+
+if val, ok := lookup[key]; ok {
+	// Do something
+}
