@@ -35,8 +35,8 @@ check:
 	@./scripts/dev/check.sh
 
 deploy:
-	cp ./dist/btk-cli-mac /Users/kyle/bin/btk-cli
-	btk-cli -v
+	cp ./dist/btk-cli-mac /Users/kyle/bin/btk
+	btk -v
 
 gen-petstore:
 	btk-cli -i=specs/petstore.1.0.0.yaml -gen=model
