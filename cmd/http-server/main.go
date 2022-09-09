@@ -31,4 +31,6 @@ func main() {
 
 	fmt.Printf("Starting HTTP server on port %s.\n", "8001")
 	http.ListenAndServe(":8001", nil)
+
+	select {}
 }
