@@ -23,6 +23,9 @@ analyze:
 	go vet -v cmd/...
 	staticcheck github.com/kyledinh/btk-go/cmd/...
 
+bench: 
+	@go test -bench=. github.com/kyledinh/btk-go/pkg/moxutil -benchmem -run=10000
+
 build:
 	@echo "## Building the binaries : $(SEMVER)-$(GITTAG)"
 	GOOS=linux GOARCH=386 go build -ldflags "-X 'config/config.Version=$(SEMVER)-$(GITTAG)'" -o dist/btk-cli-linux cmd/cli/main.go

@@ -57,3 +57,9 @@ func Test_GetRandomHyphenatedKeyByLimit(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkGenerateAKey_5(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		_ = moxutil.GetRandomHyphenedKeyByLimit(5)
+	}
+}
