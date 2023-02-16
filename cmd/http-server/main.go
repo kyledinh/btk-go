@@ -30,6 +30,10 @@ func main() {
 	http.Handle("/templates/", http.FileServer(http.FS(codex.TemplatesFS)))
 
 	fmt.Printf("Starting HTTP server on port %s.\n", "8001")
+	fmt.Println("http://localhost:8001/docs/")
+	fmt.Println("http://localhost:8001/snippets/")
+	fmt.Println("http://localhost:8001/templates/")
+	fmt.Println("http://localhost:8001/headers")
 	http.ListenAndServe(":8001", nil)
 
 	select {}

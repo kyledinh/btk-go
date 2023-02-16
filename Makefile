@@ -16,7 +16,7 @@ BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
 # ACTIONS
-.PHONY: build test
+.PHONY: build test webserver-up
 
 analyze:
 	@./scripts/dev/lint.sh
@@ -56,3 +56,7 @@ setup:
 
 test:
 	go test ./...
+
+webserver-up:
+	@echo "Running webserver on http://localhost:8001"
+	./dist/btk-http

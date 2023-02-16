@@ -1,9 +1,10 @@
 # OpenApi
 
 ## References
-- https://www.openapis.org/
+- [OpenApi Initiative](https://www.openapis.org/) - homepage
 
 ## Resources
-- https://github.com/getkin/kin-openapi/openapi3 -  Go Library for OpenApi 3
-- https://github.com/deepmap/oapi-codegen - Repo that uses the kin-openapi 
-- https://github.com/teamdigitale/api-openapi-samples
+- [Kin OpenAPI](https://github.com/getkin/kin-openapi) -  Go Library for OpenApi 3
+- [OpenApi CodeGen](https://github.com/deepmap/oapi-codegen) - Repo that uses the kin-openapi 
+- [OpenApi samples](https://github.com/teamdigitale/api-openapi-samples)
+- [SwaggerHub](https://swagger.io/tools/swaggerhub/) - Online Tools
