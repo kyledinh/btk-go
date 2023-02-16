@@ -128,7 +128,7 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    Pet:
+    pet:
       allOf:
         - $ref: '#/components/schemas/NewPet'
         - required:
@@ -139,7 +139,7 @@ components:
               format: uuid 
               description: Unique id of the pet
 
-    NewPet:
+    newPet:
       required:
         - name
       properties:

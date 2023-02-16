@@ -31,8 +31,8 @@ func main() {
 	jsontoyaml := flag.Bool("jsontoyaml", false, "Convert default json to yaml.")
 	j2y := flag.Bool("j2y", false, "Convert the default json to yaml.")
 
-	genTest := flag.Bool("gentest", false, "Generate a test file")
-	genModels := flag.String("gen", "", "Generator with an input")
+	genTest := flag.Bool("gentest", false, "Generate a unit test scaffolding '-gentest -i file.go' ")
+	genModels := flag.String("gen", "", "Generate models '-gen=model i=specs/project.yaml -d=internal/model' ")
 
 	docsFlag := flag.Bool("docs", false, "Output a documentation file")
 	snipFlag := flag.Bool("snip", false, "Output a snip/snippet")

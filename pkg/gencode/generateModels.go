@@ -62,6 +62,7 @@ func GenerateModels(specFile string, destDir string, opts codegen.Configuration)
 			FilterGoImport: FilterGoImport,
 		}
 
+		// Generate Golang models
 		tmpl, err := template.ParseFS(TemplatesFS, "templates/model.tmpl")
 		if err != nil {
 			fmt.Println(err)
@@ -79,6 +80,30 @@ func GenerateModels(specFile string, destDir string, opts codegen.Configuration)
 		}
 
 		err = ioutil.WriteFile(destDir+"/"+filename, outBytes, 0755)
+		if err != nil {
+			return err
+		}
+
+		// ALSO Generate Scala 3 models!!!
+		filename = "gen.model." + strings.ToLower(schemaName) + ".scala"
+
+		tmplScala, err := template.ParseFS(TemplatesFS, "templates/scala-3-model.tmpl")
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		var bufScala bytes.Buffer
+		err = tmplScala.Execute(&bufScala, payload)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		outBytesScala, err := format.Source(bufScala.Bytes())
+		if err != nil {
+			return err
+		}
+
+		err = ioutil.WriteFile(destDir+"/"+filename, outBytesScala, 0755)
 		if err != nil {
 			return err
 		}

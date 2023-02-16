@@ -10,9 +10,11 @@
     - [Layout](#layout)
   - [Notes](#notes)
 
+<br><hr><br>
 
 # BIN Tool Kit Project
 
+<br><hr><br>
 ## About the project
 
 A developer's tool kit. 
@@ -37,6 +39,9 @@ This is starter project.
 
 * [Golang template project](https://github.com/caicloud/golang-template-project)
 
+
+<br><br>
+
 ## Getting started
 
 Below we describe the conventions or tools specific to golang project.
@@ -47,12 +52,15 @@ Start with the Makefile and see most common operations for this repository.
 * make build 
 * make test 
 
+
 ### Software Versions
 
 | Software       | Version | Install                                        |
 |----------------|---------|------------------------------------------------|
 | Go             | 1.18    | https://go.dev/doc/install                     |
 | Docker Desktop | 4.3.x   | https://www.docker.com/products/docker-desktop |
+
+<br><br>
 
 ### Layout
 ```
@@ -101,6 +109,7 @@ A brief description of the layout:
 * `test` holds all tests (except unit tests), e.g. integration, e2e tests.
 * `third_party` for all third party libraries and tools, e.g. swagger ui, protocol buf, etc.
 * `vendor` contains all vendored code. Gitignored.
+
 
 ## Notes
 

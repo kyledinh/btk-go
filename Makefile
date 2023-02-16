@@ -16,12 +16,15 @@ BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
 # ACTIONS
-.PHONY: build test
+.PHONY: build test webserver-up
 
 analyze:
 	@./scripts/dev/lint.sh
 	go vet -v cmd/...
 	staticcheck github.com/kyledinh/btk-go/cmd/...
+
+bench: 
+	@go test -bench=. github.com/kyledinh/btk-go/pkg/moxutil -benchmem -run=10000
 
 build:
 	@echo "## Building the binaries : $(SEMVER)-$(GITTAG)"
@@ -53,3 +56,7 @@ setup:
 
 test:
 	go test ./...
+
+webserver-up:
+	@echo "Running webserver on http://localhost:8001"
+	./dist/btk-http
