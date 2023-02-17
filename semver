@@ -1,3 +1,7 @@
+0.0.8
+
+- render .md to .html in cmd/http-server 
+
 0.0.7
 
 - make bench : (benchmarking) with snippet
