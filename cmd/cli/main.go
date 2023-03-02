@@ -9,6 +9,7 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/codegen"
 	"github.com/ghodss/yaml"
 	"github.com/kyledinh/btk-go/config"
+	webserver "github.com/kyledinh/btk-go/cmd/http-server/server"
 	"github.com/kyledinh/btk-go/pkg/codex"
 	"github.com/kyledinh/btk-go/pkg/gencode"
 	"github.com/kyledinh/btk-go/pkg/moxerr"
@@ -38,6 +39,9 @@ func main() {
 	snipFlag := flag.Bool("snip", false, "Output a snip/snippet")
 	versionFlag := flag.Bool("v", false, "-v for version")
 
+	webFlag := flag.Bool("web", false, "-web to launch http server")
+
+
 	yaml2goschema := flag.String("yaml2goschema", "", "Convert spec.yaml/your-spec.yaml to go schema.")
 
 	inputfile := flag.String("i", "", "Specify a spec yaml file  '-i=spec.yaml'")
@@ -58,6 +62,11 @@ func main() {
 	)
 
 	// MAIN SWITCH
+	if *webFlag {
+		webserver.Server()
+		select {}
+	}
+
 	if *versionFlag {
 		outBytes = []byte(`btk-cli ` + config.Version)
 		os.Stdout.Write(outBytes)
