@@ -11,3 +11,8 @@ ignored/
 ign-*
 
 __debug_bin
+
+.bsp
+.metals
+project/
+target/

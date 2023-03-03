@@ -1,6 +1,7 @@
 0.0.8
 
 - render .md to .html in cmd/http-server 
+- webserver runnable from cli with `-web` argument 
 
 0.0.7
 

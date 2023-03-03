@@ -2,7 +2,7 @@
 
 - [BTK Project](#bin-tool-kit-project)
   - [About the project](#about-the-project)
-    - [API docs](#api-docs)
+    - [Usage](#usage)
     - [Design](#design)
     - [Status](#status)
     - [See also](#see-also)
@@ -19,15 +19,45 @@
 
 A developer's tool kit. 
 
-### API docs
+### Usage 
 
-The template doesn't have API docs. For web service, please include API docs here, whether it's
-auto-generated or hand-written. For auto-generated API docs, you can also give instructions on the
-build process.
+- Use the [make](#makefile) to build the CLI binary.
+- Run `btk -help` to see the options
+- Markdown documentation files in `pkg/codex/` can now be served up to stdout with `btk -docs [target file]`
+- Or you can run the webserver with `btk -web` and browse at `http://localhost:8001/docs/`, .md files will be served as html
+
+Flags          | Description
+---------------|--------------------------------------------------------------------
+-d             | Specify a directory to write to instead of ./,  '-d=output'
+-docs          | Output a documentation file
+-gen           | Generate models '-gen=model i=specs/project.yaml -d=internal/model'
+-gentest       | Generate a unit test scaffolding '-gentest -i file.go'
+-i             | Specify a spec yaml file  '-i=spec.yaml'
+-j2y           | Convert the default json to yaml.
+-jsontoyaml    | Convert default json to yaml.
+-o             | Specify a file to write to instead of STDOUT,  '-o=filename.ext'
+-snip          | Output a snip/snippet
+-v             | for version
+-web           | to launch http server
+-y2j           | Convert yaml to json instead of the default json to yaml.
+-yaml2goschema | Convert spec.yaml/your-spec.yaml to go schema.
+-yamltojson    | Convert yaml to json instead of the default json to yaml.
+
+
+<br><br>
+### Example Usage:
+
+- Convert a yaml file to json, output to a subdirectory : `btk -y2j -i=some.yaml -d=output_dir`
+- List snippets : `btk -snip`
+- Export a snippet to your pastebin (MacOS) : `btk -snip openapi.yaml | pbcopy`, (Cmd +v) to paste.
+- List docs : `btk -docs`
+- Launch docs in webserver : `btk -web`, Open browser to [http://localhost:8001/docs/index.md](http://localhost:8001/docs/index.md)
+
+<br><br>
 
 ### Design
 
-The template follows project convention doc.
+> The template follows project convention doc.
 
 * [Repository Conventions](https://github.com/caicloud/engineering/blob/master/guidelines/repo_conventions.md)
 
@@ -40,7 +70,7 @@ This is starter project.
 * [Golang template project](https://github.com/caicloud/golang-template-project)
 
 
-<br><br>
+<br><hr><br>
 
 ## Getting started
 
@@ -67,20 +97,22 @@ Start with the Makefile and see most common operations for this repository.
 .
 ├── Makefile
 ├── cmd
-│   └── cli
+│   ├── cli
+│   │   └── main.go
+│   └── http-server 
 │       └── main.go
 ├── config
 │   └── sample.launch.json
 ├── dist
 │   ├── btk-cli-linux
 │   └── btk-cli-macos
-├── docs
-│   └── resources.md
 ├── go.mod
 ├── go.sum
 ├── pkg
-│   └── hash
-│       └── hash_test.go
+│   └── codex        // CONTENT directory to store documentation, in .md or text formats.  
+│       ├── docs  
+│       ├── snippets
+│       └── templates 
 ├── readme.md
 ├── scripts
 │   └── dev
@@ -102,9 +134,8 @@ A brief description of the layout:
 * `dist` is to hold build outputs. Folder is gitignored.
 * `cmd` contains main packages, each subdirecoty of `cmd` is a main package.
 * `build` contains scripts, yaml files, dockerfiles, etc, to build and package the project.
-* `docs` for project documentations.
 * `hack` contains scripts used to manage this repository, e.g. codegen, installation, verification, etc.
-* `pkg` places most of project business logic and locate `api` package.
+* `pkg` places most of project business logic and locate `api` package. SHARED code for cmd executables 
 * `release` [chart](https://github.com/caicloud/charts) for production deployment.
 * `test` holds all tests (except unit tests), e.g. integration, e2e tests.
 * `third_party` for all third party libraries and tools, e.g. swagger ui, protocol buf, etc.
@@ -113,7 +144,7 @@ A brief description of the layout:
 
 ## Notes
 
-* Makefile **MUST NOT** change well-defined command semantics, see Makefile for details.
+* Makefile **MUST** change well-defined command semantics, see Makefile for details.
 * Every project **MUST** use `dep` for vendor management and **MUST** checkin `vendor` direcotry.
 * `cmd` and `build` **MUST** have the same set of subdirectories for main targets
   * For example, `cmd/admin,cmd/controller` and `build/admin,build/controller`.
