@@ -10,6 +10,7 @@ require (
 	github.com/deepmap/oapi-codegen v1.11.0
 	github.com/getkin/kin-openapi v0.97.0
 	github.com/ghodss/yaml v1.0.0
+	github.com/gomarkdown/markdown v0.0.0-20221013030248-663e2500819c // indirect
 	github.com/google/uuid v1.3.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.0
